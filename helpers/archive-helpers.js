@@ -36,13 +36,14 @@ exports.readListOfUrls = function(cb) {
     }
     body.push(data);
     body = Buffer.concat(body).toString().split('\n');
+    //console.log("+++++++++body", body);
     cb(body);
   });
 };
 
 exports.isUrlInList = function(url, cb) {
   exports.readListOfUrls(function(urls) {
-    if (urls.indexOf(url) !== -1) {
+    if (_.indexOf(urls, url) !== -1) {
       cb(true);
     } else {
       cb(false);
@@ -50,14 +51,17 @@ exports.isUrlInList = function(url, cb) {
   });
 };
 
-exports.addUrlToList = function(url, cb) {
+exports.addUrlToList = function(url, cbFalse, cbTrue) {
   exports.isUrlInList(url, function(bool) {
     //console.log("booooool", bool);
     if (!bool) {
       //console.log("======url", url);
-      fs.appendFile(exports.paths.list, url, function() {
-        cb();
+      var urlNewLine = url + '\n';
+      fs.appendFile(exports.paths.list, urlNewLine, function() {
+        cbFalse();
       });
+    } else {
+      cbTrue();
     }
   });
 };
