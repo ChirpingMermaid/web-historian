@@ -10,6 +10,7 @@ var _ = require('underscore');
  */
 
 exports.paths = {
+  homepage: path.join(__dirname, '../web/public/index.html'),
   siteAssets: path.join(__dirname, '../web/public'),
   archivedSites: path.join(__dirname, '../archives/sites'),
   list: path.join(__dirname, '../archives/sites.txt')
@@ -25,13 +26,39 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function() {
+exports.readListOfUrls = function(cb) {  
+  //console.log("======homepage: ", exports.paths.homepage);
+  var body = [];
+  fs.readFile(exports.paths.list, function(err, data) {
+    if (err) {
+      throw err;
+    }
+    body.push(data);
+    body = Buffer.concat(body).toString().split('\n');
+    cb(body);
+  });
 };
 
-exports.isUrlInList = function() {
+exports.isUrlInList = function(url, cb) {
+  exports.readListOfUrls(function(urls) {
+    if (urls.indexOf(url) !== -1) {
+      cb(true);
+    } else {
+      cb(false);
+    }
+  });
 };
 
-exports.addUrlToList = function() {
+exports.addUrlToList = function(url, cb) {
+  exports.isUrlInList(url, function(bool) {
+    //console.log("booooool", bool);
+    if (!bool) {
+      //console.log("======url", url);
+      fs.appendFile(exports.paths.list, url, function() {
+        cb();
+      });
+    }
+  });
 };
 
 exports.isUrlArchived = function() {
