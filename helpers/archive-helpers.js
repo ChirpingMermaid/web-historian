@@ -75,27 +75,27 @@ exports.isUrlArchived = function(url, cb) {
 
 exports.downloadUrls = function(arr, cb) {
   // exports.readListOfUrls(function(arr) {
-    arr.forEach(function(site) {
-      exports.isUrlArchived(site, function(bool) {
-        if (!bool) {
-          http.request({
-            hostname: site,
-            method: 'GET'
-          }, function(res) {
-            var body = [];
-            res.on('data', function (chunk) {
-              body.push(chunk);
-            }).on('end', function () {
-              body = Buffer.concat(body).toString();
-              fs.writeFile(exports.paths.archivedSites + '/' + site, body, function() {
-                console.log("FILE ARCHIVED!!!!!!!!!!!!");
-              });
-              //console.log("==========body", body);
+  arr.forEach(function(site) {
+    exports.isUrlArchived(site, function(bool) {
+      if (!bool) {
+        http.request({
+          hostname: site,
+          method: 'GET'
+        }, function(res) {
+          var body = [];
+          res.on('data', function (chunk) {
+            body.push(chunk);
+          }).on('end', function () {
+            body = Buffer.concat(body).toString();
+            fs.writeFile(exports.paths.archivedSites + '/' + site, body, function() {
+              //console.log("FILE ARCHIVED!!!!!!!!!!!!");
             });
-          }).end(); 
-        }
-      });
+            //console.log("==========body", body);
+          });
+        }).end(); 
+      }
     });
+  });
   // });
 };
 
